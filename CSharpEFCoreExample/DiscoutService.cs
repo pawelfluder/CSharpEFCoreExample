@@ -10,6 +10,8 @@ namespace CSharpEFCoreExample
 
         public void Process(DateTime startDate, IEnumerable<string> productCodes)
         {
+            var query03 = _dbContext.Customers.ToList();
+
             var query01 = _dbContext.Customers.Where(x => x.CustomerSince >= startDate);
             var queryString01 = query01.ToQueryString();
             var customers = query01.ToList();

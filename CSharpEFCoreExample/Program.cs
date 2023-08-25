@@ -22,17 +22,28 @@ namespace CSharpEFCoreExample
                 .Build();
 
             var options = new DbContextOptionsBuilder().Options;
-            var dbContext = new OrdersDbContext();
-            var service = new DiscoutService(dbContext);
-            var startDate = DateTime.Now;
-            var productCodes = new List<string>
+            using (var db = new OrdersDbContext())
             {
-                "123-654-323",
-                "972-251-920",
-                "145-104-023"
-            };
+                var isCreated = db.Database.EnsureCreated();
+                var bool2 = db.Database.CanConnect();
+                var bool3 = db.Database.IsSqlite();
+                var gg1 = db.Products.ToList();
+                var gg2 = db.Customers.ToList();
+                var gg3 = db.Orders.ToList();
 
-            service.Process(startDate, productCodes);
+                var service = new DiscoutService(db);
+                var startDate = DateTime.Now;
+                var gg7 = db.Database.GetDbConnection();
+                //db.Database.CommitTransaction();
+                var productCodes = new List<string>
+                {
+                    "123-654-323",
+                    "972-251-920",
+                    "145-104-023"
+                };
+
+                service.Process(startDate, productCodes);
+            }
         }
     }
 }
