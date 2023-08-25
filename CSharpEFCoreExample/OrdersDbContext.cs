@@ -10,7 +10,10 @@ namespace CSharpEFCoreExample
         private static OrdersDbContext _databaseContext = null;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlite(_connectionString);
+        {
+            optionsBuilder.AddInterceptors(new MyCommandInterceptor());
+            optionsBuilder.UseSqlite(_connectionString);
+        }
 
         public string ConnectionString => _connectionString;
         public DbSet<Order> Orders { get; set; }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSharpEFCoreExample.Migrations
 {
     [DbContext(typeof(OrdersDbContext))]
-    [Migration("20230824211033_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230825193608_InitialMigration3")]
+    partial class InitialMigration3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

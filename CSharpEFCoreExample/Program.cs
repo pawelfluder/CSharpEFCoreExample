@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 
 namespace CSharpEFCoreExample
 {
@@ -31,18 +29,7 @@ namespace CSharpEFCoreExample
                 var gg2 = db.Customers.ToList();
                 var gg3 = db.Orders.ToList();
 
-                var service = new DiscoutService(db);
-                var startDate = DateTime.Now;
-                var gg7 = db.Database.GetDbConnection();
-                //db.Database.CommitTransaction();
-                var productCodes = new List<string>
-                {
-                    "123-654-323",
-                    "972-251-920",
-                    "145-104-023"
-                };
-
-                service.Process(startDate, productCodes);
+                
             }
         }
     }
