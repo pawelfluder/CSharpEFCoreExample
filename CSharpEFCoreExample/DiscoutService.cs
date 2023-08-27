@@ -18,6 +18,9 @@ namespace CSharpEFCoreExample
                 BadSolution02(startDate, productCodes));
             EfInterceptor.Log(() =>
                 CorrectSolution(startDate, productCodes));
+
+            EfInterceptor.PrintLogToConsole();
+            EfInterceptor.PrintLogToPdf();
         }
 
         private record struct DiscoutRecord1(Customer Customer, ICollection<Order> Orders);

@@ -61,5 +61,15 @@ namespace CSharpEFCoreExample
             }
 
         }
+
+        internal static void PrintLogToConsole()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void PrintLogToPdf()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
