@@ -11,7 +11,7 @@ namespace CSharpEFCoreExample
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.AddInterceptors(new MyCommandInterceptor());
+            optionsBuilder.AddInterceptors(new EfInterceptor());
             optionsBuilder.UseSqlite(_connectionString);
         }
 

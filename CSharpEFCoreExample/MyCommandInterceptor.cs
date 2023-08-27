@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+using System;
 using System.Data.Common;
+using System.Linq.Expressions;
 
 namespace CSharpEFCoreExample
 {
-    public class MyCommandInterceptor : DbCommandInterceptor
+    public class EfInterceptor : DbCommandInterceptor
     {
         //public IMyStatistics Statistics { get; }
 
@@ -40,6 +42,24 @@ namespace CSharpEFCoreExample
             Console.Write(text);
             Console.WriteLine(string.Empty);
             Console.WriteLine(sepStop);
+        }
+
+        public static void Log(Expression<Action> action)
+        {
+            //var name = action.Method.Name;
+            var methodCallExp = (MethodCallExpression)action.Body;
+            string methodName = methodCallExp.Method.Name;
+
+            try
+            {
+                action.Compile().Invoke();
+                //action.Invoke();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
         }
     }
 }
