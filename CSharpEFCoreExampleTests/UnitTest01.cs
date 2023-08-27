@@ -9,9 +9,6 @@ namespace CSharpEFCoreExampleTests
         private readonly OrdersDbContext db;
         private readonly RandomPropertyGen propertyGen;
 
-        public DateTime[] JoinDates { get; }
-        public DateTime[] BithDates { get; }
-
         public UnitTest01()
         {
             db = new OrdersDbContext();

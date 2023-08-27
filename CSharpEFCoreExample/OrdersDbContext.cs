@@ -7,7 +7,7 @@ namespace CSharpEFCoreExample
     {
         private readonly FileService fileService;
         private string _connectionString = "Data Source=TemporaryString.db";
-        private static OrdersDbContext _databaseContext = null;
+        //private static OrdersDbContext _databaseContext = null;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

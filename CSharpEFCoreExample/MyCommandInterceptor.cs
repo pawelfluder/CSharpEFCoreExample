@@ -46,14 +46,12 @@ namespace CSharpEFCoreExample
 
         public static void Log(Expression<Action> action)
         {
-            //var name = action.Method.Name;
             var methodCallExp = (MethodCallExpression)action.Body;
             string methodName = methodCallExp.Method.Name;
 
             try
             {
                 action.Compile().Invoke();
-                //action.Invoke();
             }
             catch (Exception ex)
             {
@@ -64,12 +62,12 @@ namespace CSharpEFCoreExample
 
         internal static void PrintLogToConsole()
         {
-            throw new NotImplementedException();
+            // todo
         }
 
         internal static void PrintLogToPdf()
         {
-            throw new NotImplementedException();
+            // todo
         }
     }
 }
