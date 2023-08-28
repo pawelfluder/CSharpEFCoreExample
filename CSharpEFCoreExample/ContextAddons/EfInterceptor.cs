@@ -22,6 +22,7 @@ namespace CSharpEFCoreExample.ContextAddons
         public void LogSqlCommand(DbCommand command)
         {
             var text = command.CommandText;
+            statistics.LogLines.Add("Sql command:");
             statistics.LogLines.Add(text);
             sqlCommandsCount++;
         }
@@ -43,7 +44,7 @@ namespace CSharpEFCoreExample.ContextAddons
             }
             catch (Exception ex)
             {
-                statistics.LogLines.Add("Exception!");
+                statistics.LogLines.Add("Exception!:");
                 statistics.LogLines.Add(ex.Message);
             }
 
