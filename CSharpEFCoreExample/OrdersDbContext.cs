@@ -1,12 +1,14 @@
 ﻿using CSharpEFCoreExample.Repetition;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace CSharpEFCoreExample
 {
     public class OrdersDbContext : DbContext
     {
         private readonly FileService fileService;
-        private string _connectionString = "Data Source=TemporaryString.db";
+        private readonly EfInterceptor efInterceptor;
+        private string _connectionString = "Data Source=TemporaryName.db";
         //private static OrdersDbContext _databaseContext = null;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -22,8 +24,19 @@ namespace CSharpEFCoreExample
 
         public OrdersDbContext()
         {
+            efInterceptor = new EfInterceptor();
             fileService = new FileService();
             _connectionString = GetConnectionString();
+        }
+
+        public void LogMethod(Expression<Action> action)
+        {
+            efInterceptor.LogMethod(action);
+        }
+
+        public void PrintLogsToConsole()
+        {
+            efInterceptor.PrintLogsToConsole();
         }
 
         private string GetConnectionString()
