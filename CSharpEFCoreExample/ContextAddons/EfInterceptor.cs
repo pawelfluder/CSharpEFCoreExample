@@ -28,12 +28,14 @@ namespace CSharpEFCoreExample.ContextAddons
 
         public void LogMethod(Expression<Action> action)
         {
+            // clear
+            sqlCommandsCount = 0;
+
+            // arrange
             var methodCallExp = (MethodCallExpression)action.Body;
             string methodName = methodCallExp.Method.Name;
-
             statistics.LogLines.Add(statistics.SepStart);
             statistics.LogLines.Add("Method start: " + methodName);
-            sqlCommandsCount = 0;
 
             try
             {
@@ -46,7 +48,7 @@ namespace CSharpEFCoreExample.ContextAddons
             }
 
             statistics.LogLines.Add("Sql commands count: " + sqlCommandsCount);
-            sqlCommandsCount = 0;
+            
             if (textLines.Count == 1)
             {
                 statistics.LogLines.Add("Text log: " + textLines.First());
@@ -58,6 +60,10 @@ namespace CSharpEFCoreExample.ContextAddons
             }
             statistics.LogLines.Add("Method stop: " + methodName);
             statistics.LogLines.Add(statistics.SepStop);
+
+            // clear
+            sqlCommandsCount = 0;
+            textLines.Clear();
         }
 
         internal void PrintLogsToConsole()

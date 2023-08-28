@@ -58,10 +58,13 @@ namespace CSharpEFCoreExample
         public void BadSolution02(DateTime startDate, IEnumerable<string> productCodes)
         {
             var customers = wr.Db.Customers
-                .Where(x => x.CustomerSince >= startDate).ToList();
+                .Where(x => x.CustomerSince <= startDate).ToList();
+
+            wr.Db.Orders.Load<Order>();
+
             foreach (var c in customers)
             {
-                if (wr.Db.Orders.Any(o => productCodes.Contains(o.Product.Code)))
+                if (c.Orders.Any(o => productCodes.Contains(o.Product.Code)))
                 {
                     SendDiscoutToCustomer(c);
                 }
@@ -114,9 +117,8 @@ namespace CSharpEFCoreExample
 
         private void SendDiscoutToCustomer(Customer customer)
         {
-            wr.LogText("Cutomer: " + customer.Name +
-                "(" + customer.Id + ")" +
-                " has received discount");
+            wr.LogText(customer.ToString() +
+                " received discount");
         }
     }
 }

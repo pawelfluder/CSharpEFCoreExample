@@ -21,6 +21,8 @@ namespace CSharpEFCoreExampleTests
             var startDate = DateTime.Now.AddDays(-365);
             var products = wr.Db.Products.ToList();
             var productCodes = products.Select(x => x.Code).ToList();
+            var customers = wr.Db.Customers.ToList();
+            customers.ForEach(x => Console.WriteLine(x.ToString()));
 
             discoutService.Process(startDate, productCodes);
         }
