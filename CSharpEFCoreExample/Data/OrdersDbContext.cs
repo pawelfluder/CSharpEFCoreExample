@@ -1,8 +1,8 @@
-﻿using CSharpEFCoreExample.Repetition;
+﻿using CSharpEFCoreExample.ContextAddons;
+using CSharpEFCoreExample.Repetition;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
-namespace CSharpEFCoreExample
+namespace CSharpEFCoreExample.Data
 {
     public class OrdersDbContext : DbContext
     {
@@ -13,7 +13,7 @@ namespace CSharpEFCoreExample
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.AddInterceptors(new EfInterceptor());
+            optionsBuilder.AddInterceptors(efInterceptor);
             optionsBuilder.UseSqlite(_connectionString);
         }
 
@@ -22,21 +22,18 @@ namespace CSharpEFCoreExample
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Product> Products { get; set; }
 
+        public OrdersDbContext(EfInterceptor efInterceptor)
+        {
+            this.efInterceptor = efInterceptor;
+            fileService = new FileService();
+            _connectionString = GetConnectionString();
+        }
+
         public OrdersDbContext()
         {
             efInterceptor = new EfInterceptor();
             fileService = new FileService();
             _connectionString = GetConnectionString();
-        }
-
-        public void LogMethod(Expression<Action> action)
-        {
-            efInterceptor.LogMethod(action);
-        }
-
-        public void PrintLogsToConsole()
-        {
-            efInterceptor.PrintLogsToConsole();
         }
 
         private string GetConnectionString()

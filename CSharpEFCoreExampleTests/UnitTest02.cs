@@ -1,25 +1,25 @@
 using CSharpEFCoreExample;
+using CSharpEFCoreExample.ContextAddons;
+using CSharpEFCoreExample.Data;
 
 namespace CSharpEFCoreExampleTests
 {
     [TestClass]
     public class UnitTest02 : IDisposable
     {
-        private readonly OrdersDbContext db;
-        private readonly RandomPropertyGen propertyGen;
+        private readonly DbContextWrapper<OrdersDbContext> wr;
 
         public UnitTest02()
         {
-            db = new OrdersDbContext();
-            propertyGen = new RandomPropertyGen();
+            wr = new DbContextWrapper<OrdersDbContext>();
         }
 
         [TestMethod]
         public void Exercise01()
         {
-            var discoutService = new DiscoutService(db);
+            var discoutService = new DiscoutService(wr);
             var startDate = DateTime.Now.AddDays(-365);
-            var products = db.Products.ToList();
+            var products = wr.Db.Products.ToList();
             var productCodes = products.Select(x => x.Code).ToList();
 
             discoutService.Process(startDate, productCodes);
@@ -27,7 +27,7 @@ namespace CSharpEFCoreExampleTests
 
         public void Dispose()
         {
-            db.Dispose();
+            wr.Db.Dispose();
         }
     }
 }

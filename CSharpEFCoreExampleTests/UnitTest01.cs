@@ -1,4 +1,5 @@
-using CSharpEFCoreExample;
+using CSharpEFCoreExample.ContextAddons;
+using CSharpEFCoreExample.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSharpEFCoreExampleTests
@@ -6,27 +7,27 @@ namespace CSharpEFCoreExampleTests
     [TestClass]
     public class UnitTest01 : IDisposable
     {
-        private readonly OrdersDbContext db;
+        private readonly DbContextWrapper<OrdersDbContext> wr;
         private readonly RandomPropertyGen propertyGen;
 
         public UnitTest01()
         {
-            db = new OrdersDbContext();
+            wr = new DbContextWrapper<OrdersDbContext>();
             propertyGen = new RandomPropertyGen();
         }
 
         public void Dispose()
         {
-            db.Dispose();
+            wr.Db.Dispose();
         }
 
         [DataRow(5)]
         [TestMethod]
         public void CompletlyNewData(int max)
         {
-            DeleteAllRows(db.Customers);
-            DeleteAllRows(db.Products);
-            DeleteAllRows(db.Orders);
+            DeleteAllRows(wr.Db.Customers);
+            DeleteAllRows(wr.Db.Products);
+            DeleteAllRows(wr.Db.Orders);
 
             CreateFewProducts(max);
             CreateFewCustomers(max);
@@ -38,7 +39,7 @@ namespace CSharpEFCoreExampleTests
         public void CreateFewCustomers(int max)
         {
             // arrange
-            var customers = db.Customers.ToList();
+            var customers = wr.Db.Customers.ToList();
 
             // act
             for (int i = 0; i < max; i++)
@@ -47,7 +48,7 @@ namespace CSharpEFCoreExampleTests
             }
 
             // assert
-            var updatedCustomers = db.Customers.ToList();
+            var updatedCustomers = wr.Db.Customers.ToList();
             Assert.AreEqual(customers.Count + max, updatedCustomers.Count);
         }
 
@@ -71,9 +72,9 @@ namespace CSharpEFCoreExampleTests
             var newProduct = propertyGen.Product();
 
             // act
-            var products = db.Products;
+            var products = wr.Db.Products;
             products.Add(newProduct);
-            db.SaveChanges();
+            wr.Db.SaveChanges();
 
             // assert
         }
@@ -82,7 +83,7 @@ namespace CSharpEFCoreExampleTests
         public void CreateFewOrders()
         {
             // arrange
-            var customers = db.Customers.ToList();
+            var customers = wr.Db.Customers.ToList();
 
             // act
             foreach (var cm in customers)
@@ -90,11 +91,11 @@ namespace CSharpEFCoreExampleTests
                 var order = propertyGen.Order();
                 order.CustomerId = cm.Id;
                 //order.Customer = cm;
-                var orders = db.Orders;
+                var orders = wr.Db.Orders;
                 //var orders = cm.Orders.ToList();
 
                 orders.Add(order);
-                db.SaveChanges();
+                wr.Db.SaveChanges();
             }
 
             // assert
@@ -108,8 +109,8 @@ namespace CSharpEFCoreExampleTests
             var newCustomer = propertyGen.Customer();
 
             // act
-            db.Customers.Add(newCustomer);
-            db.SaveChanges();
+            wr.Db.Customers.Add(newCustomer);
+            wr.Db.SaveChanges();
 
             // assert
             // ??
@@ -117,7 +118,7 @@ namespace CSharpEFCoreExampleTests
 
         public void CheckDatabase()
         {
-            var canConnect = db.Database.CanConnect();
+            var canConnect = wr.Db.Database.CanConnect();
             if (!canConnect)
             {
                 throw new Exception();
@@ -129,7 +130,7 @@ namespace CSharpEFCoreExampleTests
         {
             var list = dbSet.ToList();
             dbSet.RemoveRange(list);
-            var success = db.SaveChanges();
+            var success = wr.Db.SaveChanges();
         }
     }
 }

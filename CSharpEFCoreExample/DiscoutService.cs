@@ -1,34 +1,37 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CSharpEFCoreExample.ContextAddons;
+using CSharpEFCoreExample.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CSharpEFCoreExample
 {
     public class DiscoutService
     {
-        private readonly OrdersDbContext db;
+        private readonly DbContextWrapper<OrdersDbContext> wr;
 
-        public DiscoutService(OrdersDbContext dbContext) => db = dbContext;
+        public DiscoutService(DbContextWrapper<OrdersDbContext> contextWrapper)
+            => wr = contextWrapper;
         
         public void Process(DateTime startDate, IEnumerable<string> productCodes)
         {
-            db.LogMethod(() =>
+            wr.LogMethod(() =>
                 InitialSolution(startDate, productCodes));
-            db.LogMethod(() =>
+            wr.LogMethod(() =>
                 BadSolution01(startDate, productCodes));
-            db.LogMethod(() =>
+            wr.LogMethod(() =>
                 BadSolution02(startDate, productCodes));
-            db.LogMethod(() =>
+            wr.LogMethod(() =>
                 BadSolution03(startDate, productCodes));
-            db.LogMethod(() =>
+            wr.LogMethod(() =>
                 BadSolution04(startDate, productCodes));
-            db.LogMethod(() =>
+            wr.LogMethod(() =>
                 CorrectSolution(startDate, productCodes));
 
-            db.PrintLogsToConsole();
+            wr.PrintLogsToConsole();
         }
 
         public void InitialSolution(DateTime startDate, IEnumerable<string> productCodes)
         {
-            var customers = db.Customers.Where(x => x.CustomerSince >= startDate).ToList();
+            var customers = wr.Db.Customers.Where(x => x.CustomerSince >= startDate).ToList();
             foreach (var c in customers)
             {
                 if (c.Orders.Any(o => productCodes.Contains(o.Product.Code)))
@@ -40,7 +43,7 @@ namespace CSharpEFCoreExample
 
         public void BadSolution01(DateTime startDate, IEnumerable<string> productCodes)
         {
-            var customers = db.Customers
+            var customers = wr.Db.Customers
                 .Include(x => x.Orders)
                 .Where(x => x.CustomerSince >= startDate).ToList();
             foreach (var c in customers)
@@ -54,11 +57,11 @@ namespace CSharpEFCoreExample
 
         public void BadSolution02(DateTime startDate, IEnumerable<string> productCodes)
         {
-            var customers = db.Customers
+            var customers = wr.Db.Customers
                 .Where(x => x.CustomerSince >= startDate).ToList();
             foreach (var c in customers)
             {
-                if (db.Orders.Any(o => productCodes.Contains(o.Product.Code)))
+                if (wr.Db.Orders.Any(o => productCodes.Contains(o.Product.Code)))
                 {
                     SendDiscoutToCustomer(c);
                 }
@@ -68,7 +71,7 @@ namespace CSharpEFCoreExample
         private record struct DiscoutRecord1(Customer Customer, ICollection<Order> Orders);
         private void BadSolution03(DateTime startDate, IEnumerable<string> productCodes)
         {
-            var customersQhasDiscout = db.Customers
+            var customersQhasDiscout = wr.Db.Customers
                 .Where(c => c.CustomerSince <= startDate)
                 .Select(c => new DiscoutRecord1(c, c.Orders)).ToList();
 
@@ -84,7 +87,7 @@ namespace CSharpEFCoreExample
         private record struct DiscoutRecord2(Customer Customer, bool Discout);
         private void BadSolution04(DateTime startDate, IEnumerable<string> productCodes)
         {
-            var customersQhasDiscout = db.Customers
+            var customersQhasDiscout = wr.Db.Customers
                 .Where(c => c.CustomerSince <= startDate)
                 .Select(c => new DiscoutRecord2(c,
                     c.Orders.Any(o => productCodes.Contains(o.Product.Code)))).ToList();
@@ -100,7 +103,7 @@ namespace CSharpEFCoreExample
 
         public void CorrectSolution(DateTime startDate, IEnumerable<string> productCodes)
         {
-            var customers = db.Customers
+            var customers = wr.Db.Customers
                 .Include(c => c.Orders)
                 .Where(c => c.CustomerSince <= startDate)
                 .Where(c => c.Orders
@@ -111,7 +114,9 @@ namespace CSharpEFCoreExample
 
         private void SendDiscoutToCustomer(Customer customer)
         {
-            // send a discout to a customer
+            wr.LogText("Cutomer: " + customer.Name +
+                "(" + customer.Id + ")" +
+                " has received discount");
         }
     }
 }

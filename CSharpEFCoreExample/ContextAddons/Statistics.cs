@@ -1,4 +1,4 @@
-﻿namespace CSharpEFCoreExample
+﻿namespace CSharpEFCoreExample.ContextAddons
 {
     internal class Statistics
     {

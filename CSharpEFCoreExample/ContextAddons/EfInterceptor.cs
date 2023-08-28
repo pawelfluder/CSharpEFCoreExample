@@ -2,11 +2,13 @@
 using System.Data.Common;
 using System.Linq.Expressions;
 
-namespace CSharpEFCoreExample
+namespace CSharpEFCoreExample.ContextAddons
 {
     public class EfInterceptor : DbCommandInterceptor
     {
         private static Statistics statistics = new Statistics();
+        private int sqlCommandsCount = 0;
+        private List<string> textLines = new List<string>();
 
         public override InterceptionResult<DbDataReader> ReaderExecuting(
             DbCommand command,
@@ -21,6 +23,7 @@ namespace CSharpEFCoreExample
         {
             var text = command.CommandText;
             statistics.LogLines.Add(text);
+            sqlCommandsCount++;
         }
 
         public void LogMethod(Expression<Action> action)
@@ -30,6 +33,7 @@ namespace CSharpEFCoreExample
 
             statistics.LogLines.Add(statistics.SepStart);
             statistics.LogLines.Add("Method start: " + methodName);
+            sqlCommandsCount = 0;
 
             try
             {
@@ -41,7 +45,18 @@ namespace CSharpEFCoreExample
                 statistics.LogLines.Add(ex.Message);
             }
 
-            statistics.LogLines.Add("Method stop");
+            statistics.LogLines.Add("Sql commands count: " + sqlCommandsCount);
+            sqlCommandsCount = 0;
+            if (textLines.Count == 1)
+            {
+                statistics.LogLines.Add("Text log: " + textLines.First());
+            }
+            if (textLines.Count > 1)
+            {
+                statistics.LogLines.Add("Text log: ");
+                statistics.LogLines.AddRange(textLines);
+            }
+            statistics.LogLines.Add("Method stop: " + methodName);
             statistics.LogLines.Add(statistics.SepStop);
         }
 
@@ -54,21 +69,19 @@ namespace CSharpEFCoreExample
         {
             // todo
         }
+
+        internal void LogText(string text)
+        {
+            textLines.Add(text);
+        }
     }
-
-    //public IMyStatistics Statistics { get; }
-
-    //public MyCommandInterceptor(IMyStatistics statistics)
-    //{
-    //    Statistics = statistics ?? throw new ArgumentNullException(nameof(statistics));
-    //}
-
-    //public override DbCommand CommandCreated(
-    //    CommandEndEventData eventData,
-    //    DbCommand result)
-    //{
-    //    var gg = eventData.Command.CommandText;
-    //    var gg2 = eventData.Command.Parameters;
-    //    return base.CommandCreated(eventData, result);
-    //}
 }
+
+//public override DbCommand CommandCreated(
+//    CommandEndEventData eventData,
+//    DbCommand result)
+//{
+//    var gg = eventData.Command.CommandText;
+//    var gg2 = eventData.Command.Parameters;
+//    return base.CommandCreated(eventData, result);
+//}
