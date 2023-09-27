@@ -9,34 +9,35 @@ namespace CSharpEFCoreExample.ContextAddons
         private static Statistics statistics = new Statistics();
         private int sqlCommandsCount = 0;
         private List<string> textLines = new List<string>();
+        private bool processStarted;
 
         public override InterceptionResult<DbDataReader> ReaderExecuting(
             DbCommand command,
             CommandEventData eventData,
             InterceptionResult<DbDataReader> result)
         {
-            //LogSqlCommand(command);
+            if (processStarted) { LogSqlCommand(command); }
             return result;
         }
 
         public void LogSqlCommand(DbCommand command)
         {
-            var text = command.CommandText;
-            statistics.LogLines.Add("Sql command:");
-            statistics.LogLines.Add(text);
             sqlCommandsCount++;
+            var text = command.CommandText;
+            statistics.AddLogLines("Sql command:");
+            statistics.AddLogLines(text);
         }
 
         public void LogMethod(Expression<Action> action)
         {
             // clear
-            sqlCommandsCount = 0;
+            processStarted = true;
 
             // arrange
             var methodCallExp = (MethodCallExpression)action.Body;
             string methodName = methodCallExp.Method.Name;
-            statistics.LogLines.Add(statistics.SepStart);
-            statistics.LogLines.Add("Method start: " + methodName);
+            statistics.AddLogLines(statistics.SepStart);
+            statistics.AddLogLines("Method start: " + methodName);
 
             try
             {
@@ -44,32 +45,33 @@ namespace CSharpEFCoreExample.ContextAddons
             }
             catch (Exception ex)
             {
-                statistics.LogLines.Add("Exception!:");
-                statistics.LogLines.Add(ex.Message);
+                statistics.AddLogLines("Exception!:");
+                statistics.AddLogLines(ex.Message);
             }
 
-            statistics.LogLines.Add("Sql commands count: " + sqlCommandsCount);
+            statistics.AddLogLines("Sql commands count: " + sqlCommandsCount);
             
             if (textLines.Count == 1)
             {
-                statistics.LogLines.Add("Text log: " + textLines.First());
+                statistics.AddLogLines("Text log: " + textLines.First());
             }
             if (textLines.Count > 1)
             {
-                statistics.LogLines.Add("Text log: ");
-                statistics.LogLines.AddRange(textLines);
+                statistics.AddLogLines("Text log: ");
+                statistics.AddLogLines(textLines);
             }
-            statistics.LogLines.Add("Method stop: " + methodName);
-            statistics.LogLines.Add(statistics.SepStop);
+            statistics.AddLogLines("Method stop: " + methodName);
+            statistics.AddLogLines(statistics.SepStop);
 
             // clear
-            sqlCommandsCount = 0;
             textLines.Clear();
+            processStarted = false;
         }
 
         internal void PrintLogsToConsole()
         {
-            statistics.LogLines.ForEach(x => Console.WriteLine(x));
+            statistics.Print();
+            sqlCommandsCount = 0;
         }
 
         internal void PrintLogsToPdf()
