@@ -1,6 +1,6 @@
 ﻿using CSharpEFCoreExample;
 
-namespace CSharpEFCoreExampleTests
+namespace CSharpEFCoreExampleTests.GenerateRandomData
 {
     internal class RandomPropertyGen
     {
@@ -163,7 +163,7 @@ namespace CSharpEFCoreExampleTests
                 "972-251-920",
                 "145-104-023",
             };
-            
+
         }
     }
 }

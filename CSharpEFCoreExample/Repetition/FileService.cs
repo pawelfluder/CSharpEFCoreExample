@@ -1,6 +1,6 @@
 ﻿namespace CSharpEFCoreExample.Repetition
 {
-    internal class FileService
+    public class FileService
     {
         public IPathsOperations Path { get; private set; }
 

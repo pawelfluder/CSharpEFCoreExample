@@ -26,27 +26,28 @@ namespace CSharpEFCoreExample.Data
         {
             this.efInterceptor = efInterceptor;
             fileService = new FileService();
-            _connectionString = GetConnectionString();
+            _connectionString = new ConnectionString(fileService).Get();
         }
 
         public OrdersDbContext()
         {
             efInterceptor = new EfInterceptor();
             fileService = new FileService();
-            _connectionString = GetConnectionString();
+            _connectionString = new ConnectionString(fileService).Get();
         }
 
-        private string GetConnectionString()
-        {
-            var projectName = "CSharpEFCoreExample";
-            var startupProjectFolder = fileService.Path.GetProjectFolderPath(projectName);
-            var upFolder = fileService.Path.MoveDirectoriesUp(startupProjectFolder, 1);
-            var dbFolder = upFolder + "/" + "database";
-            Directory.CreateDirectory(dbFolder);
-            var dbFileName = "MyCoolDataBase.db";
-            var dbFilePath = dbFolder + "/" + dbFileName;
-            var connectionString = "Data Source=" + dbFilePath;
-            return connectionString;
-        }
+        //private string GetConnectionString()
+        //{
+        //    var projectName = "CSharpEFCoreExample";
+        //    var startupProjectFolder = fileService.Path.GetProjectFolderPath(projectName);
+        //    var upFolder = fileService.Path.MoveDirectoriesUp(startupProjectFolder, 1);
+        //    var dbFolder = upFolder + "/" + "Database";
+        //    Directory.CreateDirectory(dbFolder);
+        //    var dbFileName = "MyCoolDataBase.db";
+        //    var dbFilePath = dbFolder + "/" + dbFileName;
+        //    dbFilePath = dbFilePath.Replace('\\', '/');
+        //    var connectionString = "Data Source=" + dbFilePath;
+        //    return connectionString;
+        //}
     }
 }

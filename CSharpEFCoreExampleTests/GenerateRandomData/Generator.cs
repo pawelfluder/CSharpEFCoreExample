@@ -2,44 +2,46 @@ using CSharpEFCoreExample.ContextAddons;
 using CSharpEFCoreExample.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace CSharpEFCoreExampleTests
+namespace CSharpEFCoreExampleTests.GenerateRandomData
 {
-    [TestClass]
-    public class UnitTest01 : IDisposable
+    public class Generator : IDisposable
     {
         private readonly DbContextWrapper<OrdersDbContext> wr;
+        private OrdersDbContext Db { get; }
         private readonly RandomPropertyGen propertyGen;
 
-        public UnitTest01()
+        public Generator()
         {
             wr = new DbContextWrapper<OrdersDbContext>();
+            Db = wr.Db;
             propertyGen = new RandomPropertyGen();
+        }
+
+        public void Generate()
+        {
+            CompletlyNewData(5);
         }
 
         public void Dispose()
         {
-            wr.Db.Dispose();
+            Db.Dispose();
         }
 
-        [DataRow(5)]
-        [TestMethod]
         public void CompletlyNewData(int max)
         {
-            DeleteAllRows(wr.Db.Customers);
-            DeleteAllRows(wr.Db.Products);
-            DeleteAllRows(wr.Db.Orders);
+            DeleteAllRows(Db.Customers);
+            DeleteAllRows(Db.Products);
+            DeleteAllRows(Db.Orders);
 
             CreateFewProducts(max);
             CreateFewCustomers(max);
             CreateFewOrders();
         }
 
-        [DataRow(5)]
-        [TestMethod]
         public void CreateFewCustomers(int max)
         {
             // arrange
-            var customers = wr.Db.Customers.ToList();
+            var customers = Db.Customers.ToList();
 
             // act
             for (int i = 0; i < max; i++)
@@ -48,12 +50,10 @@ namespace CSharpEFCoreExampleTests
             }
 
             // assert
-            var updatedCustomers = wr.Db.Customers.ToList();
+            var updatedCustomers = Db.Customers.ToList();
             Assert.AreEqual(customers.Count + max, updatedCustomers.Count);
         }
 
-        [DataRow(5)]
-        [TestMethod]
         public void CreateFewProducts(int max)
         {
             // arrange
@@ -65,25 +65,23 @@ namespace CSharpEFCoreExampleTests
             // assert
         }
 
-        [TestMethod]
         public void CreateProduct()
         {
             // arrange
             var newProduct = propertyGen.Product();
 
             // act
-            var products = wr.Db.Products;
+            var products = Db.Products;
             products.Add(newProduct);
-            wr.Db.SaveChanges();
+            Db.SaveChanges();
 
             // assert
         }
 
-        [TestMethod]
         public void CreateFewOrders()
         {
             // arrange
-            var customers = wr.Db.Customers.ToList();
+            var customers = Db.Customers.ToList();
 
             // act
             foreach (var cm in customers)
@@ -91,17 +89,16 @@ namespace CSharpEFCoreExampleTests
                 var order = propertyGen.Order();
                 order.CustomerId = cm.Id;
                 //order.Customer = cm;
-                var orders = wr.Db.Orders;
+                var orders = Db.Orders;
                 //var orders = cm.Orders.ToList();
 
                 orders.Add(order);
-                wr.Db.SaveChanges();
+                Db.SaveChanges();
             }
 
             // assert
         }
 
-        [TestMethod]
         public void CreateCustomer()
         {
             // arrange
@@ -109,8 +106,8 @@ namespace CSharpEFCoreExampleTests
             var newCustomer = propertyGen.Customer();
 
             // act
-            wr.Db.Customers.Add(newCustomer);
-            wr.Db.SaveChanges();
+            Db.Customers.Add(newCustomer);
+            Db.SaveChanges();
 
             // assert
             // ??
@@ -118,19 +115,18 @@ namespace CSharpEFCoreExampleTests
 
         public void CheckDatabase()
         {
-            var canConnect = wr.Db.Database.CanConnect();
+            var canConnect = Db.Database.CanConnect();
             if (!canConnect)
             {
                 throw new Exception();
             }
         }
 
-        [TestMethod]
-        public void DeleteAllRows<T>(DbSet<T> dbSet) where T: class
+        public void DeleteAllRows<T>(DbSet<T> dbSet) where T : class
         {
             var list = dbSet.ToList();
             dbSet.RemoveRange(list);
-            var success = wr.Db.SaveChanges();
+            var success = Db.SaveChanges();
         }
     }
 }

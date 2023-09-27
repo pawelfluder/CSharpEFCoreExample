@@ -1,14 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSharpEFCoreExample.ContextAddons
 {
-    public class DbContextWrapper<T> where T: class, IDisposable, new()
+    public class DbContextWrapper<T> : IDbContextWrapper<T> where T: DbContext, IDisposable, new () 
     {
         private readonly EfInterceptor efInterceptor;
         public T Db { get; private set; }

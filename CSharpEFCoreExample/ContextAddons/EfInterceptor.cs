@@ -15,7 +15,7 @@ namespace CSharpEFCoreExample.ContextAddons
             CommandEventData eventData,
             InterceptionResult<DbDataReader> result)
         {
-            LogSqlCommand(command);
+            //LogSqlCommand(command);
             return result;
         }
 
