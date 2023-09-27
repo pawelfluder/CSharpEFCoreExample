@@ -2,7 +2,6 @@
 using CSharpEFCoreExample.ContextAddons;
 using CSharpEFCoreExample.Data;
 using CSharpEFCoreExample.ExampleBase;
-using CSharpEFCoreExampleTests.ExampleBase;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSharpEFCoreExampleTests.Examples
